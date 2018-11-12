@@ -1,3 +1,4 @@
 <resources>
   <string name="app_name">WebIdentityApp</string>
+  <string name="button_add">Add TOTP</string>
 </resources>
