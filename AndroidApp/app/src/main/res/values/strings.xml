@@ -3,4 +3,5 @@
   <string name="button_add">Add TOTP</string>
   <string name="hint_key">Key</string>
   <string name="button_add_key">Add key</string>
+  <string name="text_scan_key">Scan key</string>
 </resources>

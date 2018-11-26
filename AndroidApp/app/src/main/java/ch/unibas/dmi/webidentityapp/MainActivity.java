@@ -12,13 +12,15 @@ import java.util.Objects;
 public class MainActivity extends AppCompatActivity {
 
   private Button buttonAddTotp;
+  private Button buttonScanTotp;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
 
-    buttonAddTotp = this.findViewById(R.id.button);
+    buttonAddTotp = this.findViewById(R.id.button_add_key);
+    buttonScanTotp = this.findViewById(R.id.button_scan_key);
 
     buttonAddTotp.setOnClickListener(new OnClickListener() {
       @Override
@@ -26,7 +28,6 @@ public class MainActivity extends AppCompatActivity {
         FragmentManager fragmentManager = getFragmentManager();
         KeyInputDialog keyInputDialog = KeyInputDialog.newInstance("test");
         keyInputDialog.show(Objects.requireNonNull(fragmentManager),"fragment_patient_form");
-        Toast.makeText(getApplicationContext(), "Hello",Toast.LENGTH_LONG).show();
       }
     });
   }
