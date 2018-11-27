@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent">
+
+  <ch.unibas.dmi.webidentityapp.camera.CameraSourcePreview
+    android:id="@+id/preview"
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="1">
+  </ch.unibas.dmi.webidentityapp.camera.CameraSourcePreview>
+
+</android.support.constraint.ConstraintLayout>
