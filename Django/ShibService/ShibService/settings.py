@@ -25,7 +25,7 @@ SECRET_KEY = 'i#-_i#3g@a#!xk^#33suu(k60*lewm76q=#dishzxot2^43!y$'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['dmi-internetoverlords.dmi.unibas.ch']
 
 
 # Application definition
