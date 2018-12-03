@@ -12,12 +12,18 @@ import android.widget.TextView;
 import ch.unibas.dmi.webidentityapp.barcode.BarcodeCaptureActivity;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.vision.barcode.Barcode;
+import java.io.IOException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
   private static final int BARCODE_READER_REQUEST_CODE = 1;
   private static final String TAG = MainActivity.class.getSimpleName();
+  private static final String ANDROID_KEY_STORE = "AndroidKeyStore";
   private TextView textViewKey;
 
   @Override
@@ -27,6 +33,16 @@ public class MainActivity extends AppCompatActivity {
 
     Button buttonAddTotp = this.findViewById(R.id.button_add_key);
     Button buttonScanTotp = this.findViewById(R.id.button_scan_key);
+    KeyStore ks;
+    try {
+      ks = KeyStore.getInstance(ANDROID_KEY_STORE);
+      ks.load(null);
+    } catch (KeyStoreException e) {
+      e.printStackTrace();
+      return;
+    } catch (CertificateException | NoSuchAlgorithmException | IOException e) {
+      e.printStackTrace();
+    }
     textViewKey = this.findViewById(R.id.textView);
 
     buttonAddTotp.setOnClickListener(new OnClickListener() {
