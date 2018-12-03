@@ -6,6 +6,7 @@ import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.KeyStore;
 import java.security.KeyStore.PrivateKeyEntry;
+import java.security.KeyStore.SecretKeyEntry;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
@@ -32,11 +33,11 @@ public class TOTP {
       throws NoSuchAlgorithmException, UnrecoverableEntryException, KeyStoreException, InvalidKeyException {
     Mac mac = Mac.getInstance("HmacSha1");
     KeyStore.Entry key = ks.getEntry(alias,null);
-    if (!(key instanceof Key)) {
+    if (!(key instanceof SecretKeyEntry)) {
       System.err.println("Key Store Entry with alias: "+alias+"wasn't a key");
       return -1;
     }
-    mac.init((Key)key);
+    mac.init(((SecretKeyEntry)key).getSecretKey());
     mac.update(counter);
     byte[] result =  mac.doFinal();
     byte offset = result[result.length-1];
