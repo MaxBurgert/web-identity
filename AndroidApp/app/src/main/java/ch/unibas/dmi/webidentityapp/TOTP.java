@@ -19,30 +19,18 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 public class TOTP {
-  private static final String ANDROID_KEY_STORE = "AndroidKeyStore";
-  private KeyStore ks;
-  private String alias;
 
-  TOTP(String alias) throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException {
-    ks = KeyStore.getInstance(ANDROID_KEY_STORE);
-    ks.load(null);
-    this.alias = alias;
-  }
 
-  public int getKey(byte[] counter,String alias)
-      throws NoSuchAlgorithmException, UnrecoverableEntryException, KeyStoreException, InvalidKeyException {
+  public static int getKey(byte[] counter,String secret)
+      throws NoSuchAlgorithmException,InvalidKeyException {
     Mac mac = Mac.getInstance("HmacSha1");
-    KeyStore.Entry key = ks.getEntry(alias,null);
-    if (!(key instanceof SecretKeyEntry)) {
-      System.err.println("Key Store Entry with alias: "+alias+"wasn't a key");
-      return -1;
-    }
-    mac.init(((SecretKeyEntry)key).getSecretKey());
+    SecretKeySpec k = new SecretKeySpec(secret.getBytes(),"bla");
+    mac.init(k);
     mac.update(counter);
     byte[] result =  mac.doFinal();
     byte offset = result[result.length-1];
     offset &= 15;
-    byte[] trunc =  Arrays.copyOfRange(result,offset,offset+3);
+    byte[] trunc =  Arrays.copyOfRange(result,offset,offset+4);
     trunc[0]&=127;
     int truncint = ByteBuffer.wrap(trunc).getInt();
     truncint %= 1000000;
