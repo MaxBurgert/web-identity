@@ -23,7 +23,6 @@ public class MainActivity extends AppCompatActivity {
 
   private static final int BARCODE_READER_REQUEST_CODE = 1;
   private static final String TAG = MainActivity.class.getSimpleName();
-  private static final String ANDROID_KEY_STORE = "AndroidKeyStore";
   private TextView textViewKey;
 
   @Override
@@ -33,16 +32,6 @@ public class MainActivity extends AppCompatActivity {
 
     Button buttonAddTotp = this.findViewById(R.id.button_add_key);
     Button buttonScanTotp = this.findViewById(R.id.button_scan_key);
-    KeyStore ks;
-    try {
-      ks = KeyStore.getInstance(ANDROID_KEY_STORE);
-      ks.load(null);
-    } catch (KeyStoreException e) {
-      e.printStackTrace();
-      return;
-    } catch (CertificateException | NoSuchAlgorithmException | IOException e) {
-      e.printStackTrace();
-    }
     textViewKey = this.findViewById(R.id.textView);
 
     buttonAddTotp.setOnClickListener(new OnClickListener() {
