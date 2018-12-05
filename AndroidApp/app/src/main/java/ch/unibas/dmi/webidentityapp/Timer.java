@@ -14,16 +14,14 @@ class Timer{
   void startTimer(){
     new Thread(() -> {
       started = true;
-      int i = 0;
       while (true){
-        long tmpCounter = Math.floorDiv(getTime(),30000);
-        if(tmpCounter != counterThirtySeconds){
-          counterThirtySeconds = tmpCounter;
+        long tmpTime = getTime();
+        int tmpRest = (int) (tmpTime % 30000)/1000;
+        if(tmpRest == 0 || counterThirtySeconds == 0){
+          counterThirtySeconds = Math.floorDiv(tmpTime, 30000);
           MainActivity.updateKey(longToBytes(counterThirtySeconds));
-          i = 30;
         }
-        i--;
-        MainActivity.updateTime(i);
+        MainActivity.updateTime(30-tmpRest);
         try {
           Thread.sleep(1000);
         } catch (InterruptedException e) {

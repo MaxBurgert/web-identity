@@ -45,6 +45,8 @@ public class MainActivity extends AppCompatActivity {
 
     handler = new Handler(Looper.getMainLooper());
 
+    setTitle("Time-Based One-Time Password");
+
     buttonScanTotp.setOnClickListener(v -> {
       Intent intent = new Intent(getApplicationContext(), BarcodeCaptureActivity.class);
       startActivityForResult(intent, BARCODE_READER_REQUEST_CODE);
@@ -79,9 +81,12 @@ public class MainActivity extends AppCompatActivity {
   static void updateKey(byte[] counter) {
     handler.post(() -> {
       try {
-        textViewKey.setText(String.valueOf(totp.getKey(counter)));
+        String tmp = String.valueOf(totp.getKey(counter));
+        String tmp1 = tmp.substring(0,3);
+        String tmp2 = tmp.substring(3,6);
+        textViewKey.setText(String.format("%s %s", tmp1, tmp2));
         Log.d(TAG, String.valueOf(totp.getKey(counter)));
-      } catch (NoSuchAlgorithmException | InvalidKeyException e) {
+      } catch (NoSuchAlgorithmException | InvalidKeyException | StringIndexOutOfBoundsException e) {
         e.printStackTrace();
       }
     });
