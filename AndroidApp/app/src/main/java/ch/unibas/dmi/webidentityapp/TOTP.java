@@ -9,10 +9,16 @@ import javax.crypto.spec.SecretKeySpec;
 
 class TOTP {
 
-  static int getKey(byte[] counter, String secret)
+  private byte[] secret;
+
+  TOTP(String secret) {
+    this.secret = secret.getBytes();
+  }
+
+  int getKey(byte[] counter)
       throws NoSuchAlgorithmException, InvalidKeyException {
     Mac mac = Mac.getInstance("HmacSha1");
-    SecretKeySpec k = new SecretKeySpec(secret.getBytes(), "bla");
+    SecretKeySpec k = new SecretKeySpec(secret, "bla");
     mac.init(k);
     mac.update(counter);
     byte[] result = mac.doFinal();
@@ -25,4 +31,7 @@ class TOTP {
     return truncint;
   }
 
+  void updateKey(String secret) {
+    this.secret = secret.getBytes();
+  }
 }

@@ -12,7 +12,29 @@
     android:id="@+id/textView"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="@string/key_is_displayed_here"/>
+    android:text="@string/secret_key_is_displayed_here"/>
+
+  <TextView
+    android:id="@+id/textView_TOTP"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/textView_key_text"
+    app:layout_constraintTop_toBottomOf="@id/textView"/>
+
+  <TextView
+    android:id="@+id/textViewCounter"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/timer_counter_text"
+    app:layout_constraintTop_toBottomOf="@id/textView_TOTP"/>
+
+  <ProgressBar
+    android:id="@+id/progressBar"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    app:layout_constraintTop_toBottomOf="@id/textViewCounter"
+    android:max="30"
+    style="?android:attr/progressBarStyleHorizontal" />
 
   <Button
     android:id="@+id/button_add_key"

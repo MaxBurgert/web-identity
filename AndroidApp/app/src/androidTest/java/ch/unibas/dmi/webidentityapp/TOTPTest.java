@@ -12,8 +12,9 @@ public class TOTPTest {
 
   @Test
   public void test(){
+    TOTP totp = new TOTP("test");
     try {
-      int key = TOTP.getKey(new byte[]{0x00,0x00,0x00,0x01},"test");
+      int key = totp.getKey(new byte[]{0x00,0x00,0x00,0x01});
       assertEquals(482727,key);
     } catch ( NoSuchAlgorithmException | InvalidKeyException e) {
       e.printStackTrace();
