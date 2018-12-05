@@ -1,7 +1,4 @@
 import os
-from pprint import pprint
-from django.conf import settings
-
 from django.shortcuts import render
 
 
@@ -19,4 +16,4 @@ def index(request):
     if os.access(__file__, os.X_OK):
         print('Can execute')
 
-    return render(request, 'auth-index.html')
+    return render(request, 'auth-index.html', {'meta': request.META})
