@@ -6,12 +6,14 @@ import java.util.jar.Manifest;
 class Timer{
 
   private long counterThirtySeconds = 0;
+  private boolean started;
 
   Timer (){
   }
 
   void startTimer(){
     new Thread(() -> {
+      started = true;
       int i = 0;
       while (true){
         long tmpCounter = Math.floorDiv(getTime(),30000);
@@ -39,5 +41,9 @@ class Timer{
     ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
     buffer.putLong(x);
     return buffer.array();
+  }
+
+  public boolean isStarted() {
+    return started;
   }
 }

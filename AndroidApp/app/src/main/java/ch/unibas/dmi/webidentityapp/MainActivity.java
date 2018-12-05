@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
   private static TextView textViewKey;
   private TextView textViewSecretKey;
   private static TOTP totp;
+  private Timer timer;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -52,11 +53,20 @@ public class MainActivity extends AppCompatActivity {
     buttonLoadKey.setOnClickListener(
         view -> textViewSecretKey.setText(FileIO.loadFromFile(getApplicationContext())));
 
+    String keyFromFile = FileIO.loadFromFile(getApplicationContext());
+
+    timer = new Timer();
+
+    if(!keyFromFile.equals("")){
+      startTOTP();
+    }
+  }
+
+  private void startTOTP(){
     totp = new TOTP(FileIO.loadFromFile(getApplicationContext()));
-
-    Timer timer = new Timer();
-    timer.startTimer();
-
+    if (!timer.isStarted()){
+      timer.startTimer();
+    }
   }
 
   static void updateTime(int counter) {
@@ -87,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
           textViewSecretKey.setText("Secret key: " + barcode.displayValue);
           Log.d(TAG, "Scanned barcode with value: " + barcode.displayValue);
           FileIO.saveToFile(getApplicationContext(),barcode.displayValue);
-          totp.updateKey(barcode.displayValue);
+          startTOTP();
         }
       } else {
         super.onActivityResult(requestCode, resultCode, data);
