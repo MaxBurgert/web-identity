@@ -5,24 +5,47 @@
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
+  android:padding="16dp"
   tools:context=".MainActivity">
 
+  <TextView
+    android:id="@+id/textView_TOTP"
+    android:textStyle="bold"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/textView_key_text"
+    android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+    android:textSize="30sp"
+    />
+
+  <android.support.constraint.ConstraintLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="16dp"
+    app:layout_constraintStart_toEndOf="@id/textView_TOTP">
+
+    <TextView
+      android:id="@+id/textViewCounter"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="@string/timer_counter_text"/>
+
+    <ProgressBar
+      android:id="@+id/progressBar"
+      android:layout_width="200dp"
+      android:layout_height="wrap_content"
+      app:layout_constraintTop_toBottomOf="@id/textViewCounter"
+      android:max="30"
+      style="?android:attr/progressBarStyleHorizontal" />
+  </android.support.constraint.ConstraintLayout>
 
   <TextView
     android:id="@+id/textView"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="@string/key_is_displayed_here"/>
-
-  <Button
-    android:id="@+id/button_add_key"
-    style="@style/Widget.AppCompat.Button.Colored"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="@string/button_add"
-    android:layout_margin="16dp"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintBottom_toBottomOf="parent"/>
+    android:layout_marginTop="16dp"
+    android:text="@string/secret_key_is_displayed_here"
+    app:layout_constraintTop_toBottomOf="@+id/textView_TOTP"/>
 
   <Button
     android:id="@+id/button_scan_key"
@@ -31,7 +54,17 @@
     android:layout_height="wrap_content"
     android:text="@string/text_scan_key"
     android:layout_margin="16dp"
-    app:layout_constraintEnd_toStartOf="@id/button_add_key"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintBottom_toBottomOf="parent"/>
+
+  <Button
+    android:id="@+id/button_load_stored_key"
+    style="@style/Widget.AppCompat.Button.Colored"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/text_load_stored_key"
+    android:layout_margin="16dp"
+    app:layout_constraintEnd_toStartOf="@id/button_scan_key"
     app:layout_constraintBottom_toBottomOf="parent"/>
 
 </android.support.constraint.ConstraintLayout>

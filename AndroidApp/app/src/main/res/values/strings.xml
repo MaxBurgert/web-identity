@@ -16,5 +16,8 @@
   <string name="permission_camera_rationale">Access to the camera is needed for detection</string>
   <string name="no_camera_permission">This application cannot run because it does not have the camera permission.  The application will now exit.</string>
   <string name="low_storage_error">Face detector dependencies cannot be downloaded due to low device storage</string>
-  <string name="key_is_displayed_here">Key is displayed here</string>
+  <string name="secret_key_is_displayed_here">Click button to display secret key</string>
+  <string name="text_load_stored_key">show secret key</string>
+  <string name="timer_counter_text">Timer counter is displayed here</string>
+  <string name="textView_key_text">TOTP Key</string>
 </resources>
