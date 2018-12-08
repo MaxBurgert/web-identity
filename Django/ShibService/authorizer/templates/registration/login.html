@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    {% load static %}
+    <link rel="icon" href="{% static "favicon.ico" %}">
+
+    <title>Signin</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{% static "bootstrap/css/bootstrap.min.css" %}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{% static "signin.css" %}" rel="stylesheet">
+</head>
+
+<body class="text-center">
+<form class="form-signin" method="post" action="{% url 'login' %}">
+    {% csrf_token %}
+    <img class="mb-4" src="{% static "unibas-logo.png" %}" alt="" height="72">
+    <h1 class="h3 mb-3 font-weight-normal">Please sign in with your unibas account</h1>
+
+    <label for="id_username" class="sr-only">{{ form.username.label_tag }}</label>
+    <input type="text" name="username" autofocus class="form-control" placeholder="Username" required id="id_username">
+
+    <label for="id_password" class="sr-only">{{ form.password.label_tag }}</label>
+    <input type="password" name="password" required id="id_password" class="form-control" placeholder="Password">
+
+    {% if form.errors %}
+        <div class="alert alert-danger fade show" role="alert">
+            <strong>Holy guacamole!</strong> Your username and password don't match.
+        </div>
+    {% endif %}
+
+    <input type="submit" class="btn btn-lg btn-primary btn-block" value="Sign in"/>
+    <input type="hidden" name="next" value="{{ next }}"/>
+
+</form>
+</body>
+</html>
+
