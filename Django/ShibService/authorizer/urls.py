@@ -5,4 +5,5 @@ from authorizer import views
 
 urlpatterns = [
     url(r'^(?![\s\S])', views.index),
+    url(r'^signup/$', views.signup, name='signup'),
 ]
