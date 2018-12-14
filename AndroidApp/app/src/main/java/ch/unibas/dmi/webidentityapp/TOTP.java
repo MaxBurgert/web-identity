@@ -6,13 +6,15 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import org.apache.commons.codec.binary.Base32;
 
 class TOTP {
 
   private byte[] secret;
 
   TOTP(String secret) {
-    this.secret = secret.getBytes();
+    Base32 test = new Base32();
+    this.secret = test.decode(secret.getBytes());
   }
 
   int getKey(byte[] counter)

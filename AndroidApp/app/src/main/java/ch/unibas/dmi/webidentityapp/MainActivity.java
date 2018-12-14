@@ -15,6 +15,8 @@ import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.vision.barcode.Barcode;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -101,7 +103,14 @@ public class MainActivity extends AppCompatActivity {
           Barcode barcode = data.getParcelableExtra(BarcodeCaptureActivity.BarcodeObject);
           textViewSecretKey.setText("Secret key: " + barcode.displayValue);
           Log.d(TAG, "Scanned barcode with value: " + barcode.displayValue);
-          FileIO.saveToFile(getApplicationContext(),barcode.displayValue);
+          // regex: =([A-Z])\w+&
+          Pattern p = Pattern.compile("([A-Z])\\w+");
+          Matcher m = p.matcher(barcode.displayValue);
+          String extractedValue = barcode.displayValue;
+          if (m.find()) {
+            extractedValue = m.group();
+          }
+          FileIO.saveToFile(getApplicationContext(), extractedValue);
           startTOTP();
         }
       } else {
