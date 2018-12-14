@@ -13,7 +13,6 @@ class TOTP {
   private byte[] secret;
 
   TOTP(String secret) {
-    // regex: =([A-Z])\w+&
     Base32 test = new Base32();
     this.secret = test.decode(secret.getBytes());
   }
