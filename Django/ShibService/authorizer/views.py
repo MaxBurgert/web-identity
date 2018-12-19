@@ -16,10 +16,10 @@ def signup(request):
         form = OverlordUserCreationForm(request.POST)
         if form.is_valid():
             form.save()
-            mail = form.cleaned_data.get('mail')
+            username = form.cleaned_data.get('username')
             raw_password = form.cleaned_data.get('password1')
             # user_in_db = User.objects.get(username=username)
-            user = authenticate(mail=mail, password=raw_password)
+            user = authenticate(username=username, password=raw_password)
             secret = get_random_string(50)
             overlord_user = OverlordsUserModel.objects.get_or_create(user=user, login_method_simple=True,
                                                                      totp_secret=secret)
