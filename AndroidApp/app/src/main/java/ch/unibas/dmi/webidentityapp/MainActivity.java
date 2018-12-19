@@ -101,15 +101,16 @@ public class MainActivity extends AppCompatActivity {
       if (resultCode == CommonStatusCodes.SUCCESS) {
         if (data != null) {
           Barcode barcode = data.getParcelableExtra(BarcodeCaptureActivity.BarcodeObject);
-          textViewSecretKey.setText("Secret key: " + barcode.displayValue);
           Log.d(TAG, "Scanned barcode with value: " + barcode.displayValue);
           // regex: =([A-Z])\w+&
-          Pattern p = Pattern.compile("([A-Z])\\w+");
+          Pattern p = Pattern.compile("=([A-Z])\\w+&");
           Matcher m = p.matcher(barcode.displayValue);
           String extractedValue = barcode.displayValue;
           if (m.find()) {
             extractedValue = m.group();
+            extractedValue = extractedValue.replace("=","").replace("&","");
           }
+          textViewSecretKey.setText("Secret key: " + extractedValue);
           FileIO.saveToFile(getApplicationContext(), extractedValue);
           startTOTP();
         }
