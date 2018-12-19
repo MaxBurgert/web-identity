@@ -8,7 +8,7 @@ from django.utils.crypto import get_random_string
 from qr_code.qrcode.utils import QRCodeOptions
 
 from authorizer.TOTP import TOTP
-from authorizer.forms import TOTPForm
+from authorizer.forms import TOTPForm, LoginForm
 from authorizer.models import OverlordsUserModel
 
 
@@ -79,3 +79,29 @@ def compare_totp_code(request):
         form = TOTPForm()
 
     return render(request, 'totpcheck.html', {'form': form})
+
+
+def login_overlord(request):
+    if request.method == 'POST':
+        # create a form instance and populate it with data from the request:
+        form = TOTPForm(request.POST)
+        # check whether it's valid:
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            totp_code = form.cleaned_data.get('totp_code')
+            user = authenticate(username=username, password=password)
+
+            overlord = OverlordsUserModel.objects.get(user=user)
+            totp_checker = TOTP(overlord.totp_secret)
+
+            if totp_checker.getKey() == totp_code:
+                login(request, user)
+            else:
+                return render(request, 'totpres.html', {'status': False})
+
+            return redirect(index)
+    else:
+        form = LoginForm()
+
+    return render(request, 'registration/login.html', {'form': form})
