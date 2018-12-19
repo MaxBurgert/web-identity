@@ -1,9 +1,10 @@
 import array
 import hashlib
-import time
 import hmac
+import time
 
 from numpy import long
+
 
 # inspiration: https://blog.gingerlime.com/2010/once-upon-a-time/
 class TOTP:
