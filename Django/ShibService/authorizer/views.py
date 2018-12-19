@@ -3,12 +3,13 @@ import os
 
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
-from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
+from django.utils.crypto import get_random_string
 from qr_code.qrcode.utils import QRCodeOptions
 
 from authorizer.TOTP import TOTP
 from authorizer.forms import TOTPForm
+from authorizer.models import OverlordsUserModel
 
 
 def signup(request):
@@ -18,9 +19,14 @@ def signup(request):
             form.save()
             username = form.cleaned_data.get('username')
             raw_password = form.cleaned_data.get('password1')
+            # user_in_db = User.objects.get(username=username)
             user = authenticate(username=username, password=raw_password)
+            secret = get_random_string(50)
+            overlord_user = OverlordsUserModel.objects.get_or_create(user=user, login_method_simple=True,
+                                                                     totp_secret=secret)
+
             login(request, user)
-            return redirect(index)
+            return redirect('qrcode', secret=secret)
     else:
         form = UserCreationForm()
     return render(request, 'registration/signup.html', {'form': form})
@@ -41,13 +47,12 @@ def index(request):
     return render(request, 'auth-index.html', {'meta': request.META})
 
 
-def qrcode(request):
+def qrcode(request, secret):
     secret_key = base64.b32encode("1234567890".encode("UTF-8"))
-    print(secret_key)
     secret_key = secret_key.decode("UTF-8")
-    print(secret_key)
+    print(secret)
     context = dict(
-        my_options=QRCodeOptions(size='M', border=6, error_correction='H'),
+        my_options=QRCodeOptions(size='M', border=3, error_correction='H'),
         secret=f'otpauth://totp/InternetOverlords?secret={secret_key}&issuer=UniversityOfBasel'
     )
     return render(request, 'registration/qrcode.html', context=context)
