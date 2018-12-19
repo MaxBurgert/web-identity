@@ -1,0 +1,15 @@
+#main-quiz {
+    margin-top: 5px;
+}
+
+#send-btn {
+    margin: 5px;
+}
+
+.nav-link:hover {
+    border: 0;
+}
+
+.nav-tabs {
+    border: 0;
+}
