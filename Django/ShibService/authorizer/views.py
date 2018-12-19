@@ -2,25 +2,24 @@ import base64
 import os
 
 from django.contrib.auth import login, authenticate
-from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
 from django.utils.crypto import get_random_string
 from qr_code.qrcode.utils import QRCodeOptions
 
 from authorizer.TOTP import TOTP
-from authorizer.forms import TOTPForm, LoginForm
+from authorizer.forms import LoginForm, OverlordUserCreationForm
 from authorizer.models import OverlordsUserModel
 
 
 def signup(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = OverlordUserCreationForm(request.POST)
         if form.is_valid():
             form.save()
-            username = form.cleaned_data.get('username')
+            mail = form.cleaned_data.get('mail')
             raw_password = form.cleaned_data.get('password1')
             # user_in_db = User.objects.get(username=username)
-            user = authenticate(username=username, password=raw_password)
+            user = authenticate(mail=mail, password=raw_password)
             secret = get_random_string(50)
             overlord_user = OverlordsUserModel.objects.get_or_create(user=user, login_method_simple=True,
                                                                      totp_secret=secret)
@@ -28,8 +27,17 @@ def signup(request):
             login(request, user)
             return redirect('qrcode', secret=secret)
     else:
-        form = UserCreationForm()
+        form = OverlordUserCreationForm()
     return render(request, 'registration/signup.html', {'form': form})
+
+
+def aai_login(request):
+    mail = request.META['mail']
+    home_organization = request.META['homeOrganization']
+    affiliation = request.META['affiliation']
+    first_name = request.META['givenName']
+    last_name = request.META['surname']
+    persistent_id = request.META['persistent-id']
 
 
 def index(request):
@@ -58,33 +66,10 @@ def qrcode(request, secret):
     return render(request, 'registration/qrcode.html', context=context)
 
 
-def compare_totp_code(request):
-    # if this is a POST request we need to process the form data
-    if request.method == 'POST':
-        # create a form instance and populate it with data from the request:
-        form = TOTPForm(request.POST)
-        # check whether it's valid:
-        if form.is_valid():
-            # process the data in form.cleaned_data as required
-            # ...
-            # redirect to a new URL:
-            print(form.cleaned_data)
-            totp = TOTP('1234567890')
-            print(totp.getKey())
-            return render(request, 'totpres.html', {'status': totp.getKey() == form.cleaned_data.get('code')})
-
-
-    # if a GET (or any other method) we'll create a blank form
-    else:
-        form = TOTPForm()
-
-    return render(request, 'totpcheck.html', {'form': form})
-
-
 def login_overlord(request):
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:
-        form = TOTPForm(request.POST)
+        form = LoginForm(request.POST)
         # check whether it's valid:
         if form.is_valid():
             username = form.cleaned_data.get('username')
