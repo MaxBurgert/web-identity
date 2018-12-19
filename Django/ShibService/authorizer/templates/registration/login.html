@@ -23,12 +23,13 @@
     <img class="mb-4" src="{% static "unibas-logo.png" %}" alt="" height="72">
     <h1 class="h3 mb-3 font-weight-normal">Please sign in with your unibas account</h1>
 
-    <label for="id_username" class="sr-only">{{ form.username.label_tag }}</label>
     <input type="text" name="username" autofocus class="form-control" placeholder="Username" required id="id_username">
 
-    <label for="id_password" class="sr-only">{{ form.password.label_tag }}</label>
     <input type="password" name="password" required id="id_password" class="form-control" placeholder="Password">
 
+    <input type="text" name="totp" class="form-control" placeholder="TOTP Code">
+
+    <br>
     {% if form.errors %}
         <div class="alert alert-danger fade show" role="alert">
             <strong>Holy guacamole!</strong> Your username and password don't match.
