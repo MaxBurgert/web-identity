@@ -1,3 +1,4 @@
+{% load qr_code %}
 <!doctype html>
 <html lang="en">
 <head>
@@ -14,11 +15,7 @@
     <link href="{% static "bootstrap/css/bootstrap.min.css" %}" rel="stylesheet">
 </head>
 <body>
-<h2>Sign up</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Sign up</button>
-</form>
+<h2>Scan your QR code</h2>
+{% qr_from_text secret options=my_options %}
 </body>
 </html>

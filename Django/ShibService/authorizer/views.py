@@ -1,7 +1,9 @@
 import os
+
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
+from qr_code.qrcode.utils import QRCodeOptions
 
 
 def signup(request):
@@ -32,3 +34,11 @@ def index(request):
         print('Can execute')
 
     return render(request, 'auth-index.html', {'meta': request.META})
+
+
+def qrcode(request):
+    context = dict(
+        my_options=QRCodeOptions(size='H', border=6, error_correction='H'),
+        secret=123456789
+    )
+    return render(request, 'registration/qrcode.html', context=context)

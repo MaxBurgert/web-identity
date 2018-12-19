@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'authorizer',
     'bootstrap',
+    'qr_code',
 ]
 
 MIDDLEWARE = [
