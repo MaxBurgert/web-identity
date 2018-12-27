@@ -10,6 +10,16 @@ class OverlordUserCreationForm(UserCreationForm):
         fields = ('username', 'password1', 'password2')
         field_classes = {'username': EmailField}
 
+    def create_user_without_pw(self, email):
+        user = super(UserCreationForm, self).save(commit=False)
+        user.email = email
+        user.username = email
+        self.fields['password1'].required = False
+        self.fields['password2'].required = False
+        self.fields['password1'].widget.attrs['autocomplete'] = 'off'
+        self.fields['password2'].widget.attrs['autocomplete'] = 'off'
+        return user
+
     def save(self, commit=True):
         user = super(UserCreationForm, self).save(commit=False)
         user.email = user.username

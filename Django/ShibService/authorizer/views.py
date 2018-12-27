@@ -41,13 +41,29 @@ def aai_login(request):
     persistent_id = request.META['persistent-id']
 
     users = User.objects.all()
+
+    registered = False
     for user in users:
         if user.email == mail:
             # User already signup with his mail, set flag in form
-            user.first_name = first_name
-            user.last_name = last_name
-            user.save()
-    return render(request, 'registration/aailogin.html', {'elements': users})
+            registered = True
+            if user.first_name != first_name:
+                user.first_name = first_name
+                user.last_name = last_name
+                user.save()
+            # log in the user
+            login(request, user)
+
+    if not registered:
+        # if a user logs in first with shibboleth, an account without a password will be created and the user
+        form = OverlordUserCreationForm()
+        new_user = form.create_user_without_pw(mail)
+        new_user.first_name = first_name
+        new_user.last_name = last_name
+        new_user.save()
+        login(request, new_user)
+
+    return redirect(index)
 
 
 def index(request):
