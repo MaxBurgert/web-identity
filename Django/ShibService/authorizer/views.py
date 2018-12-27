@@ -1,5 +1,6 @@
 import base64
 import os
+from django.contrib.auth.models import User
 
 from django.contrib.auth import login, authenticate
 from django.shortcuts import render, redirect
@@ -38,6 +39,15 @@ def aai_login(request):
     first_name = request.META['givenName']
     last_name = request.META['surname']
     persistent_id = request.META['persistent-id']
+
+    users = User.objects.all()
+    for user in users:
+        if user.email == mail:
+            # User already signup with his mail, set flag in form
+            user.first_name = first_name
+            user.last_name = last_name
+            user.save()
+    return render(request, 'registration/aailogin.html', {'elements': users})
 
 
 def index(request):
