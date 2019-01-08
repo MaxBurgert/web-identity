@@ -1,5 +1,4 @@
 import base64
-import os
 
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.models import User
@@ -23,13 +22,13 @@ def signup(request):
             # user_in_db = User.objects.get(username=username)
             user = authenticate(username=username, password=raw_password)
             secret = get_random_string(50)
-            overlord_user = OverlordsUserModel.objects.get_or_create(user=user, login_method_simple=True,
-                                                                     totp_secret=secret)
+            OverlordsUserModel.objects.get_or_create(user=user, login_method_simple=True, totp_secret=secret)
 
             login(request, user)
             return redirect('qrcode', secret=secret)
     else:
         form = OverlordUserCreationForm()
+
     return render(request, 'registration/signup.html', {'form': form})
 
 
@@ -68,8 +67,9 @@ def aai_login(request):
 
         # Create the corresponding OverlordUser which references new_user
         secret = get_random_string(50)
-        OverlordsUserModel.objects.get_or_create(user=new_user, login_method_simple=True,
-                                                 totp_secret=secret)
+        OverlordsUserModel.objects.get_or_create(user=new_user, login_method_aai=True,
+                                                 totp_secret=secret, home_organization=home_organization,
+                                                 affiliation=affiliation, persistent_id=persistent_id)
 
         login(request, new_user)
         request.session['_totp_secret'] = secret
@@ -79,17 +79,6 @@ def aai_login(request):
 
 
 def index(request):
-    for key in request.META:
-        print(str(key))
-        print(str(request.META[key]))
-
-    if os.access(__file__, os.R_OK):
-        print('Can Read')
-    if os.access(__file__, os.W_OK):
-        print('Can Write')
-    if os.access(__file__, os.X_OK):
-        print('Can execute')
-
     return render(request, 'auth-index.html', {'meta': request.META})
 
 
@@ -104,7 +93,7 @@ def qrcode(request):
         )
         return render(request, 'registration/qrcode.html', context=context)
     else:
-        raise Http404('No secret was found in the current session.')
+        raise Http404('No totp secret was found in the current session.')
 
 
 def simple_login_overlord(request):
