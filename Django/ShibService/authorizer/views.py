@@ -1,8 +1,9 @@
 import base64
 import os
-from django.contrib.auth.models import User
 
 from django.contrib.auth import login, authenticate
+from django.contrib.auth.models import User
+from django.http import Http404
 from django.shortcuts import render, redirect
 from django.utils.crypto import get_random_string
 from qr_code.qrcode.utils import QRCodeOptions
@@ -51,6 +52,9 @@ def aai_login(request):
                 user.first_name = first_name
                 user.last_name = last_name
                 user.save()
+
+            # TODO: ask the user for its TOTP code
+
             # log in the user
             login(request, user)
 
@@ -61,7 +65,15 @@ def aai_login(request):
         new_user.first_name = first_name
         new_user.last_name = last_name
         new_user.save()
+
+        # Create the corresponding OverlordUser which references new_user
+        secret = get_random_string(50)
+        OverlordsUserModel.objects.get_or_create(user=new_user, login_method_simple=True,
+                                                 totp_secret=secret)
+
         login(request, new_user)
+        request.session['_totp_secret'] = secret
+        return redirect('qrcode')  # show the qr code upon first registration
 
     return redirect(index)
 
@@ -81,18 +93,21 @@ def index(request):
     return render(request, 'auth-index.html', {'meta': request.META})
 
 
-def qrcode(request, secret):
-    secret_key = base64.b32encode("1234567890".encode("UTF-8"))
-    secret_key = secret_key.decode("UTF-8")
-    print(secret)
-    context = dict(
-        my_options=QRCodeOptions(size='M', border=3, error_correction='H'),
-        secret=f'otpauth://totp/InternetOverlords?secret={secret_key}&issuer=UniversityOfBasel'
-    )
-    return render(request, 'registration/qrcode.html', context=context)
+def qrcode(request):
+    secret = request.session.get('_totp_secret')
+    if secret:
+        secret_key = base64.b32encode(secret.encode("UTF-8"))
+        secret_key = secret_key.decode("UTF-8")
+        context = dict(
+            my_options=QRCodeOptions(size='M', border=3, error_correction='H'),
+            secret=f'otpauth://totp/InternetOverlords?secret={secret_key}&issuer=UniversityOfBasel'
+        )
+        return render(request, 'registration/qrcode.html', context=context)
+    else:
+        raise Http404('No secret was found in the current session.')
 
 
-def login_overlord(request):
+def simple_login_overlord(request):
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:
         form = LoginForm(request.POST)
