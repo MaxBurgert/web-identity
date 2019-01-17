@@ -17,6 +17,7 @@ def signup(request):
         form = OverlordUserCreationForm(request.POST)
         if form.is_valid():
             form.save()
+
             username = form.cleaned_data.get('username')
             raw_password = form.cleaned_data.get('password1')
             # user_in_db = User.objects.get(username=username)
@@ -25,7 +26,8 @@ def signup(request):
             OverlordsUserModel.objects.get_or_create(user=user, login_method_simple=True, totp_secret=secret)
 
             login(request, user)
-            return redirect('qrcode', secret=secret)
+            request.session['_totp_secret'] = secret
+            return redirect('qrcode')
     else:
         form = OverlordUserCreationForm()
 
@@ -47,10 +49,15 @@ def aai_login(request):
         if user.email == mail:
             # User already signup with his mail, set flag in form
             registered = True
+
+            if user.password:
+                user.password = None
+
             if user.first_name != first_name:
                 user.first_name = first_name
                 user.last_name = last_name
-                user.save()
+
+            user.save()
 
             # TODO: ask the user for its TOTP code
 
@@ -105,6 +112,7 @@ def simple_login_overlord(request):
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
             totp_code = form.cleaned_data.get('totp_code')
+
             user = authenticate(username=username, password=password)
 
             overlord = OverlordsUserModel.objects.get(user=user)

@@ -7,9 +7,9 @@ class OverlordsUserModel(models.Model):
     login_method_simple = models.BooleanField(default=False, blank=True)
     login_method_aai = models.BooleanField(default=False, blank=True)
     totp_secret = models.CharField(max_length=255)
-    home_organization = models.CharField(max_length=255, blank=True, default=None)
-    affiliation = models.CharField(max_length=255, blank=True, default=None)
-    persistent_id = models.CharField(max_length=255, blank=True, default=None)
+    home_organization = models.CharField(max_length=255, blank=True, default='')
+    affiliation = models.CharField(max_length=255, blank=True, default='')
+    persistent_id = models.CharField(max_length=255, blank=True, default='')
 
     def __str__(self):
         return self.user.username
