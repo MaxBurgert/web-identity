@@ -15,7 +15,10 @@
     <link href="{% static "bootstrap/css/bootstrap.min.css" %}" rel="stylesheet">
 </head>
 <body>
+<div align="center">
 <h2>Scan your QR code to store the secret in your TOTP app.</h2>
 {% qr_from_text secret options=my_options %}
+<a href="https://dmi-internetoverlords.dmi.unibas.ch/django/django" class="btn btn-lg btn-primary btn-block">Continue</a>
+</div>
 </body>
 </html>
