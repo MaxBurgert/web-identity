@@ -30,11 +30,14 @@
     <input type="text" name="totp_code" class="form-control" placeholder="TOTP Code">
 
     <br>
-    {% if form.errors %}
-        <div class="alert alert-danger fade show" role="alert">
-            <strong>Holy guacamole!</strong> Your username and password don't match.
-        </div>
-    {% endif %}
+    {% for field in form %}
+        {% for error in field.errors %}
+            <div class="alert alert-danger">
+                <strong>{{ error|escape }}</strong>
+            </div>
+        {% endfor %}
+    {% endfor %}
+
 
     <input type="submit" class="btn btn-lg btn-primary btn-block" value="Sign in"/>
     <a href="https://dmi-internetoverlords.dmi.unibas.ch/Shibboleth.sso/Login" class="btn btn-lg btn-primary btn-block">Sign

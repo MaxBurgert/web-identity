@@ -51,7 +51,7 @@ def aai_login(request):
             registered = True
 
             if user.password:
-                user.password = None
+                user.password = ''
 
             if user.first_name != first_name:
                 user.first_name = first_name
@@ -115,15 +115,28 @@ def simple_login_overlord(request):
 
             user = authenticate(username=username, password=password)
 
-            overlord = OverlordsUserModel.objects.get(user=user)
-            totp_checker = TOTP(overlord.totp_secret)
+            if user:
+                # Found user in database
+                overlord = OverlordsUserModel.objects.get(user=user)
+                totp_checker = TOTP(overlord.totp_secret)
 
-            if totp_checker.getKey() == totp_code:
-                login(request, user)
+                if totp_checker.getKey() == totp_code:
+                    login(request, user)
+                    return redirect(index)
+                else:
+                    form.add_error('totp_code', 'TOTP Code incorrect.')
             else:
-                return render(request, 'totpres.html', {'status': False})
+                users = User.objects.all()
 
-            return redirect(index)
+                registered = False
+                for user in users:
+                    if user.email == username and OverlordsUserModel.objects.get(user=user).login_method_aai:
+                        # User already signup with his mail probably via AAI , set flag in form
+                        registered = True
+                        form.add_error('username', 'Please use your SWITCH Login.')
+
+                if not registered:
+                    form.add_error('password', 'Something is fishy with your login credentials.')
     else:
         form = LoginForm()
 
