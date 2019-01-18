@@ -33,3 +33,6 @@ class LoginForm(forms.Form):
     username = forms.CharField()
     password = forms.CharField(widget=forms.PasswordInput())
     totp_code = forms.CharField()
+
+class TOTPForm(forms.Form):
+    totp_code = forms.CharField()

@@ -8,7 +8,7 @@ from django.utils.crypto import get_random_string
 from qr_code.qrcode.utils import QRCodeOptions
 
 from authorizer.TOTP import TOTP
-from authorizer.forms import LoginForm, OverlordUserCreationForm
+from authorizer.forms import LoginForm, OverlordUserCreationForm, TOTPForm
 from authorizer.models import OverlordsUserModel
 
 
@@ -58,11 +58,8 @@ def aai_login(request):
                 user.last_name = last_name
 
             user.save()
-
-            # TODO: ask the user for its TOTP code
-
-            # log in the user
-            login(request, user)
+            request.session['aai_persistent_id'] = OverlordsUserModel.objects.get(user=user).persistent_id
+            return redirect('aai_login_totp')
 
     if not registered:
         # if a user logs in first with shibboleth, an account without a password will be created and the user
@@ -82,7 +79,25 @@ def aai_login(request):
         request.session['_totp_secret'] = secret
         return redirect('qrcode')  # show the qr code upon first registration
 
-    return redirect(index)
+    # TODO: ask the user for its TOTP code
+
+
+def aai_login_totp(request):
+    if request.method == 'GET':
+        form = TOTPForm()
+    elif request.method == 'POST':
+        form = TOTPForm(request.POST)
+        if form.is_valid():
+            overlord_user = OverlordsUserModel.objects.get(persistent_id=request.session['aai_persistent_id'])
+
+            totp_checker = TOTP(overlord_user.totp_secret)
+            if totp_checker.getKey() == form.cleaned_data.get('totp_code'):
+                login(request, overlord_user.user)
+                return redirect(index)
+            else:
+                form.add_error('totp_code', 'TOTP Code incorrect.')
+
+    return render(request, 'registration/totpChecker.html', {'form': form, 'user': OverlordsUserModel.objects.get(persistent_id=request.session['aai_persistent_id']).user})
 
 
 def index(request):
