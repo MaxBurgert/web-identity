@@ -27,6 +27,7 @@ def signup(request):
 
             login(request, user)
             request.session['_totp_secret'] = secret
+            request.session['_signup_username'] = username
             return redirect('qrcode')
     else:
         form = OverlordUserCreationForm()
@@ -58,7 +59,7 @@ def aai_login(request):
                 user.last_name = last_name
 
             user.save()
-            request.session['aai_persistent_id'] = OverlordsUserModel.objects.get(user=user).persistent_id
+            request.session['_aai_persistent_id'] = OverlordsUserModel.objects.get(user=user).persistent_id
             return redirect('aai_login_totp')
 
     if not registered:
@@ -80,23 +81,29 @@ def aai_login(request):
         return redirect('qrcode')  # show the qr code upon first registration
 
 
+def confirm_totp_code(totp_secret, totp_code):
+    totp_checker = TOTP(totp_secret)
+    if totp_checker.getKey() == totp_code:
+        return True
+
+    return False
+
+
 def aai_login_totp(request):
     if request.method == 'GET':
         form = TOTPForm()
     elif request.method == 'POST':
         form = TOTPForm(request.POST)
         if form.is_valid():
-            overlord_user = OverlordsUserModel.objects.get(persistent_id=request.session['aai_persistent_id'])
-
-            totp_checker = TOTP(overlord_user.totp_secret)
-            if totp_checker.getKey() == form.cleaned_data.get('totp_code'):
+            overlord_user = OverlordsUserModel.objects.get(persistent_id=request.session['_aai_persistent_id'])
+            if confirm_totp_code(overlord_user.totp_secret, form.cleaned_data.get('totp_code')):
                 login(request, overlord_user.user)
                 return redirect(index)
             else:
                 form.add_error('totp_code', 'TOTP Code incorrect.')
 
     return render(request, 'registration/totpChecker.html', {'form': form, 'user': OverlordsUserModel.objects.get(
-        persistent_id=request.session['aai_persistent_id']).user})
+        persistent_id=request.session['_aai_persistent_id']).user})
 
 
 def index(request):
@@ -109,17 +116,41 @@ def index(request):
 
 
 def qrcode(request):
-    secret = request.session.get('_totp_secret')
-    if secret:
-        secret_key = base64.b32encode(secret.encode("UTF-8"))
-        secret_key = secret_key.decode("UTF-8")
-        context = dict(
-            my_options=QRCodeOptions(size='M', border=3, error_correction='H'),
-            secret=f'otpauth://totp/InternetOverlords?secret={secret_key}&issuer=UniversityOfBasel'
-        )
-        return render(request, 'registration/qrcode.html', context=context)
-    else:
-        raise Http404('No totp secret was found in the current session.')
+    if request.method == 'GET':
+        secret = request.session.get('_totp_secret')
+        if secret:
+            secret_key = base64.b32encode(secret.encode("UTF-8"))
+            secret_key = secret_key.decode("UTF-8")
+            context = dict(
+                my_options=QRCodeOptions(size='M', border=3, error_correction='H'),
+                secret=f'otpauth://totp/InternetOverlords?secret={secret_key}&issuer=UniversityOfBasel',
+                form=TOTPForm()
+            )
+            return render(request, 'registration/qrcode.html', context=context)
+        else:
+            raise Http404('No totp secret was found in the current session.')
+    elif request.method == 'POST':
+        form = TOTPForm(request.POST)
+        if form.is_valid():
+            if confirm_totp_code(request.session.get('_totp_secret'), form.cleaned_data.get('totp_code')):
+                login(request, User.objects.get(id=request.session.get('_auth_user_id')))
+                return redirect(index)
+            else:
+                form.add_error('totp_code', 'TOTP Code incorrect.')
+
+        secret = request.session.get('_totp_secret')
+        if secret:
+            secret_key = base64.b32encode(secret.encode("UTF-8"))
+            secret_key = secret_key.decode("UTF-8")
+            context = dict(
+                my_options=QRCodeOptions(size='M', border=3, error_correction='H'),
+                secret=f'otpauth://totp/InternetOverlords?secret={secret_key}&issuer=UniversityOfBasel',
+                form=form
+            )
+            return render(request, 'registration/qrcode.html', context=context)
+        else:
+            raise Http404('No totp secret was found in the current session.')
+
 
 
 def simple_login_overlord(request):
