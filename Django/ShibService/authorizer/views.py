@@ -79,8 +79,6 @@ def aai_login(request):
         request.session['_totp_secret'] = secret
         return redirect('qrcode')  # show the qr code upon first registration
 
-    # TODO: ask the user for its TOTP code
-
 
 def aai_login_totp(request):
     if request.method == 'GET':
@@ -97,7 +95,8 @@ def aai_login_totp(request):
             else:
                 form.add_error('totp_code', 'TOTP Code incorrect.')
 
-    return render(request, 'registration/totpChecker.html', {'form': form, 'user': OverlordsUserModel.objects.get(persistent_id=request.session['aai_persistent_id']).user})
+    return render(request, 'registration/totpChecker.html', {'form': form, 'user': OverlordsUserModel.objects.get(
+        persistent_id=request.session['aai_persistent_id']).user})
 
 
 def index(request):
