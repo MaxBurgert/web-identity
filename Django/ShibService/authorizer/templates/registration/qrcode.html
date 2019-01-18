@@ -15,7 +15,37 @@
     <link href="{% static "bootstrap/css/bootstrap.min.css" %}" rel="stylesheet">
 </head>
 <body>
-<div align="center">
+
+<nav class="navbar navbar-light navbar-expand-md bg-faded justify-content-center" style="background-color: #a5d7d2">
+    <a class="navbar-brand d-flex w-50 mr-auto">
+        <img src="{% static "unibas-logo.png" %}" height="50">
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsingNavbar3">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="navbar-collapse collapse w-100" id="collapsingNavbar3">
+
+        <ul class="nav navbar-nav ml-auto w-100 justify-content-center">
+            <li class="nav-item">
+                <a class="navbar-text">{{ form.get_name }}</a>
+            </li>
+        </ul>
+
+        <ul class="nav navbar-nav ml-auto w-100 justify-content-end">
+            {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'logout' %}?next={{ request.path }}">Logout</a>
+                </li>
+            {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'login' %}?next={{ request.path }}">Login</a>
+                </li>
+            {% endif %}
+        </ul>
+    </div>
+</nav>
+
+<div class="container" align="center">
     <h2>Scan your QR code to store the secret in your TOTP app.</h2>
     {% qr_from_text secret options=my_options %}
     <a href="https://dmi-internetoverlords.dmi.unibas.ch/django/django" class="btn btn-lg btn-primary btn-block">Continue</a>

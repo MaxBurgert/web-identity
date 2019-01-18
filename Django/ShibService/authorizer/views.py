@@ -36,10 +36,10 @@ def signup(request):
 
 def aai_login(request):
     mail = request.META['mail']
-    home_organization = request.META['homeOrganization']
-    affiliation = request.META['affiliation']
-    first_name = request.META['givenName']
-    last_name = request.META['surname']
+    home_organization = request.META['homeOrganization'].encode('latin1').decode('utf-8')
+    affiliation = request.META['affiliation'].encode('latin1').decode('utf-8')
+    first_name = request.META['givenName'].encode('latin1').decode('utf-8')
+    last_name = request.META['surname'].encode('latin1').decode('utf-8')
     persistent_id = request.META['persistent-id']
 
     users = User.objects.all()
@@ -100,7 +100,12 @@ def aai_login_totp(request):
 
 
 def index(request):
-    return render(request, 'auth-index.html', {'meta': request.META})
+    tmp_dict = request.META
+    for key, value in tmp_dict.items():
+        if isinstance(value, str):
+            tmp_dict[key] = value.encode('latin1').decode('utf-8')
+
+    return render(request, 'auth-index.html', {'meta': tmp_dict})
 
 
 def qrcode(request):
