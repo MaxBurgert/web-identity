@@ -9,7 +9,7 @@ class OverlordsUserModel(models.Model):
     totp_secret = models.CharField(max_length=255)
     home_organization = models.CharField(max_length=255, blank=True, default='')
     affiliation = models.CharField(max_length=255, blank=True, default='')
-    persistent_id = models.CharField(max_length=255, blank=True, default='', unique=True)
+    persistent_id = models.CharField(max_length=999, blank=True, default='', unique=True)
 
     def __str__(self):
         return self.user.username

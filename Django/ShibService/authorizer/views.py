@@ -23,7 +23,9 @@ def signup(request):
             # user_in_db = User.objects.get(username=username)
             user = authenticate(username=username, password=raw_password)
             secret = get_random_string(50)
-            OverlordsUserModel.objects.get_or_create(user=user, login_method_simple=True, totp_secret=secret)
+            new_persistent_id = get_random_string(999)
+            OverlordsUserModel.objects.get_or_create(user=user, login_method_simple=True, totp_secret=secret,
+                                                     persistent_id=new_persistent_id)
 
             login(request, user)
             request.session['_totp_secret'] = secret
@@ -53,6 +55,12 @@ def aai_login(request):
 
             if user.password:
                 user.password = ''
+
+            overlord_user = OverlordsUserModel.objects.get(user=user)
+            if overlord_user.login_method_simple:
+                overlord_user.login_method_simple = False
+                overlord_user.login_method_aai = True
+                overlord_user.save()
 
             if user.first_name != first_name:
                 user.first_name = first_name
@@ -150,7 +158,6 @@ def qrcode(request):
             return render(request, 'registration/qrcode.html', context=context)
         else:
             raise Http404('No totp secret was found in the current session.')
-
 
 
 def simple_login_overlord(request):
