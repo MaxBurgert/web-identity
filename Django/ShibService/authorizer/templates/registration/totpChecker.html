@@ -8,7 +8,7 @@
     {% load static %}
     <link rel="icon" href="{% static "favicon.ico" %}">
 
-    <title>Signin</title>
+    <title>2FA</title>
 
     <!-- Bootstrap core CSS -->
     <link href="{% static "bootstrap/css/bootstrap.min.css" %}" rel="stylesheet">
@@ -18,14 +18,11 @@
 </head>
 
 <body class="text-center">
-<form class="form-signin" method="post" action="{% url 'login' %}">
+<form class="form-signin" method="post" action="{% url 'aai_login_totp' %}">
     {% csrf_token %}
     <img class="mb-4" src="{% static "unibas-logo.png" %}" alt="" height="72">
-    <h1 class="h3 mb-3 font-weight-normal">Please sign in with your unibas account</h1>
-
-    <input type="text" name="username" autofocus class="form-control" placeholder="Username" required id="id_username">
-
-    <input type="password" name="password" required id="id_password" class="form-control" placeholder="Password">
+    <h1 class="h3 mb-3 font-weight-normal">Hello {{ user.first_name }} {{ user.last_name }}</h1>
+    <h1 class="h3 mb-3 font-weight-normal">Please enter your TOTP code here.</h1>
 
     <input type="text" name="totp_code" class="form-control" placeholder="TOTP Code">
 
@@ -39,12 +36,7 @@
     {% endfor %}
 
 
-    <input type="submit" class="btn btn-lg btn-primary btn-block" value="Sign in"/>
-    <a href="https://dmi-internetoverlords.dmi.unibas.ch/Shibboleth.sso/Login" class="btn btn-lg btn-primary btn-block">Sign
-        in with SWITCH</a>
-    <a href="https://dmi-internetoverlords.dmi.unibas.ch/django/django/signup" class="btn btn-lg btn-primary btn-block">Sign
-        up</a>
-    <input type="hidden" name="next" value="../../django/"/>
+    <input type="submit" class="btn btn-lg btn-primary btn-block" value="Ok"/>
 
 </form>
 </body>

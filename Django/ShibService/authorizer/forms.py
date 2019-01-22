@@ -22,6 +22,7 @@ class OverlordUserCreationForm(UserCreationForm):
 
     def save(self, commit=True):
         user = super(UserCreationForm, self).save(commit=False)
+        user.set_password(self.cleaned_data['password1'])
         user.email = user.username
         if commit:
             user.save()
@@ -29,6 +30,10 @@ class OverlordUserCreationForm(UserCreationForm):
 
 
 class LoginForm(forms.Form):
-    mail = forms.EmailField()
-    password = forms.PasswordInput()
+    username = forms.CharField()
+    password = forms.CharField(widget=forms.PasswordInput())
+    totp_code = forms.CharField()
+
+
+class TOTPForm(forms.Form):
     totp_code = forms.CharField()
