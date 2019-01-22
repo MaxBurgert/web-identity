@@ -2,6 +2,7 @@ import base64
 
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
 from django.shortcuts import render, redirect
 from django.utils.crypto import get_random_string
@@ -47,11 +48,11 @@ def aai_login(request):
 
     users = User.objects.all()
 
-    registered = False
+    registered_before_as_simple = False
     for user in users:
         if user.email == mail:
             # User already signup with his mail, set flag in form
-            registered = True
+            registered_before_as_simple = True
 
             if user.password:
                 user.password = ''
@@ -70,7 +71,18 @@ def aai_login(request):
             request.session['_aai_persistent_id'] = OverlordsUserModel.objects.get(user=user).persistent_id
             return redirect('aai_login_totp')
 
-    if not registered:
+        else:
+            try:
+                if OverlordsUserModel.objects.get(user=user) and OverlordsUserModel.objects.get(
+                        user=user).persistent_id == persistent_id:
+                    # stop, because user already has identical persistent id -> already logged in via SWITCH
+                    request.session['_aai_persistent_id'] = OverlordsUserModel.objects.get(user=user).persistent_id
+                    return redirect('aai_login_totp')
+            except ObjectDoesNotExist as e:
+                # continue as this user has no relevant information for us
+                pass
+
+    if not registered_before_as_simple:
         # if a user logs in first with shibboleth, an account without a password will be created and the user
         form = OverlordUserCreationForm()
         new_user = form.create_user_without_pw(mail)
