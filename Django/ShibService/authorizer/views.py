@@ -9,7 +9,7 @@ from django.utils.crypto import get_random_string
 from qr_code.qrcode.utils import QRCodeOptions
 
 from authorizer.TOTP import TOTP
-from authorizer.forms import LoginForm, OverlordUserCreationForm, TOTPForm
+from authorizer.forms import LoginForm, OverlordUserCreationForm, TOTPForm, OverlordUserDisplayForm, UserDisplayForm
 from authorizer.models import OverlordsUserModel
 
 
@@ -132,7 +132,13 @@ def index(request):
         if isinstance(value, str):
             tmp_dict[key] = value.encode('latin1').decode('utf-8')
 
-    return render(request, 'auth-index.html', {'meta': tmp_dict})
+    if not request.user.is_anonymous:
+        overlordForm = OverlordUserDisplayForm(instance=OverlordsUserModel.objects.get(user=request.user))
+        userForm = UserDisplayForm(instance=request.user)
+        return render(request, 'auth-index.html',
+                      {'meta': tmp_dict, 'overlordForm': overlordForm, 'userForm': userForm})
+    else:
+        return render(request, 'auth-index.html', {'meta': tmp_dict})
 
 
 def qrcode(request):

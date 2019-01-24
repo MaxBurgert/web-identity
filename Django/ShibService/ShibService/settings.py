@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'authorizer',
     'bootstrap',
     'qr_code',
+    'crispy_forms',
+    'fontawesome',
 ]
 
 MIDDLEWARE = [
@@ -116,6 +118,8 @@ USE_TZ = True
 
 STATIC_ROOT = '/var/www/dmi-internetoverlords.dmi.unibas.ch/static'
 STATIC_URL = '/static/'
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
