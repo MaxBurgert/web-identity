@@ -35,10 +35,10 @@
 </nav>
 <div class="container">
     {% if user.is_authenticated %}
-        <span style="font-family: sans-serif; ">
-        {% for key, value in meta.items %}
-            <b>{{ key }}</b> : {{ value }}<br>
-        {% endfor %}
+        {% load crispy_forms_tags %}
+        {% crispy userForm %}
+        {% crispy overlordForm %}
+
     {% else %}
         <div class="container text-center" style="padding: 10px 0 0 0;">
         <div class="alert alert-danger">
@@ -46,7 +46,6 @@
         </div>
     </div>
     {% endif %}
-    </span>
 </div>
 </body>
 </html>

@@ -1,7 +1,10 @@
+from crispy_forms.helper import FormHelper
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.forms import EmailField
+
+from authorizer.models import OverlordsUserModel
 
 
 class OverlordUserCreationForm(UserCreationForm):
@@ -27,6 +30,36 @@ class OverlordUserCreationForm(UserCreationForm):
         if commit:
             user.save()
         return user
+
+
+class UserDisplayForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super(UserDisplayForm, self).__init__(*args, **kwargs)
+
+        self.helper = FormHelper(self)
+
+
+class OverlordUserDisplayForm(forms.ModelForm):
+    class Meta:
+        model = OverlordsUserModel
+        exclude = ['user']
+        widgets = {
+            'login_method_simple': forms.TextInput(attrs={'readonly': 'readonly'}),
+            'login_method_aai': forms.TextInput(attrs={'readonly': 'readonly'}),
+            'totp_secret': forms.TextInput(attrs={'readonly': 'readonly'}),
+            'home_organization': forms.TextInput(attrs={'readonly': 'readonly'}),
+            'affiliation': forms.TextInput(attrs={'readonly': 'readonly'}),
+            'persistent_id': forms.TextInput(attrs={'readonly': 'readonly'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(OverlordUserDisplayForm, self).__init__(*args, **kwargs)
+
+        self.helper = FormHelper(self)
 
 
 class LoginForm(forms.Form):
